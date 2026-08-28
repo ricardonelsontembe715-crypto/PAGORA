@@ -63,7 +63,7 @@ export const Modal: React.FC<ModalProps> = ({
       {isOpen && (
         <div
           id={id}
-          className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2.5 sm:p-4 md:p-6 pt-[calc(0.625rem+env(safe-area-inset-top))] pb-[calc(0.625rem+env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain"
           role="dialog"
           aria-modal="true"
         >
