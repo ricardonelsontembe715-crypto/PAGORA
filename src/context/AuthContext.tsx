@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { User, Account, PlanType, AdminUser } from '../types/database';
 import {
   AuthState,
@@ -219,11 +219,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Atualiza heartbeat de atividade da sessão
+  // Atualiza a atividade sem invalidar a sessão em refresh, Back ou suspensão do PWA.
+  const lastActivityWrite = useRef(0);
   useEffect(() => {
-    if (user) {
-      storage.set('pagora_session_meta', { lastActiveAt: Date.now() });
-    }
+    if (!user) return;
+
+    const markActivity = () => {
+      const now = Date.now();
+      if (now - lastActivityWrite.current < 60_000) return;
+      lastActivityWrite.current = now;
+      storage.set('pagora_session_meta', { lastActiveAt: now });
+    };
+
+    markActivity();
+    const activityEvents: Array<keyof WindowEventMap> = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+    activityEvents.forEach((eventName) => window.addEventListener(eventName, markActivity, { passive: true }));
+    document.addEventListener('visibilitychange', markActivity);
+
+    return () => {
+      activityEvents.forEach((eventName) => window.removeEventListener(eventName, markActivity));
+      document.removeEventListener('visibilitychange', markActivity);
+    };
   }, [user]);
 
   // Estados de Configurações

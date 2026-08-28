@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { createServer as createHttpServer } from 'node:http';
 import path from 'path';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
@@ -931,9 +932,16 @@ app.post('/api/data/:resource', (req: Request, res: Response) => {
 // VITE & STATIC FILES SERVING (MIDDLEWARE)
 // -------------------------------------------------------------
 async function bootstrap() {
+  const httpServer = createHttpServer(app);
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        // The Express app owns the HTTP server, so explicitly attach Vite's
+        // HMR WebSocket to that same server instead of leaving it unbound.
+        hmr: { server: httpServer },
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -945,7 +953,7 @@ async function bootstrap() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`[PAGORA] Servidor operacional em http://0.0.0.0:${PORT}`);
   });
 }

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 export type AppView =
   | 'landing'
@@ -29,6 +29,11 @@ export interface NavigationParams {
   [key: string]: unknown;
 }
 
+interface NavigationState {
+  view: AppView;
+  params: NavigationParams;
+}
+
 interface NavigationContextType {
   currentView: AppView;
   selectedCustomerId: string | null;
@@ -42,68 +47,85 @@ interface NavigationContextType {
   toggleSidebar: () => void;
 }
 
+const HISTORY_KEY = 'pagora-navigation';
+const initialNavigation: NavigationState = { view: 'landing', params: {} };
+const isNavigationState = (value: unknown): value is NavigationState => {
+  if (!value || typeof value !== 'object') return false;
+  const state = value as Partial<NavigationState>;
+  return typeof state.view === 'string' && typeof state.params === 'object' && state.params !== null;
+};
+
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
 export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentView, setCurrentView] = useState<AppView>('landing');
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
-  const [navParams, setNavParams] = useState<NavigationParams>({});
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [navigation, setNavigation] = useState<NavigationState>(initialNavigation);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isApplyingHistory = useRef(false);
 
-  const navigate = (view: AppView, params?: NavigationParams) => {
-    setNavParams(params || {});
+  const applyNavigation = useCallback((next: NavigationState) => {
+    setNavigation(next);
+    setIsSidebarOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-    if (params?.customerId) {
-      setSelectedCustomerId(params.customerId);
-    } else if (view !== 'dashboard_customer_detail') {
-      setSelectedCustomerId(null);
+  useEffect(() => {
+    const currentState = window.history.state?.[HISTORY_KEY];
+    if (!isNavigationState(currentState)) {
+      window.history.replaceState({ ...window.history.state, [HISTORY_KEY]: initialNavigation }, '');
+    } else {
+      applyNavigation(currentState);
     }
 
-    if (params?.invoiceId) {
-      setSelectedInvoiceId(params.invoiceId);
-    } else if (view !== 'dashboard_invoice_detail') {
-      setSelectedInvoiceId(null);
+    const handlePopState = (event: PopStateEvent) => {
+      const previous = event.state?.[HISTORY_KEY];
+      if (isNavigationState(previous)) {
+        isApplyingHistory.current = true;
+        applyNavigation(previous);
+        queueMicrotask(() => {
+          isApplyingHistory.current = false;
+        });
+      } else {
+        // Keep browser navigation inside the SPA when an external/old entry is reached.
+        window.history.pushState({ ...window.history.state, [HISTORY_KEY]: navigation }, '');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [applyNavigation, navigation]);
+
+  const navigate = useCallback((view: AppView, params: NavigationParams = {}) => {
+    const next: NavigationState = { view, params: { ...params } };
+    setNavigation(next);
+    setIsSidebarOpen(false);
+    if (!isApplyingHistory.current) {
+      const current = window.history.state || {};
+      window.history.pushState({ ...current, [HISTORY_KEY]: next }, '');
     }
-
-    setCurrentView(view);
-    // Fecha sidebar no mobile ao mudar de página
-    setIsSidebarOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const navigateToCustomer = (customerId: string) => {
-    setSelectedCustomerId(customerId);
-    setSelectedInvoiceId(null);
-    setCurrentView('dashboard_customer_detail');
-    setIsSidebarOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const navigateToCustomer = useCallback((customerId: string) => {
+    navigate('dashboard_customer_detail', { customerId });
+  }, [navigate]);
 
-  const navigateToInvoice = (invoiceId: string) => {
-    setSelectedInvoiceId(invoiceId);
-    setCurrentView('dashboard_invoice_detail');
-    setIsSidebarOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
+  const navigateToInvoice = useCallback((invoiceId: string) => {
+    navigate('dashboard_invoice_detail', { invoiceId });
+  }, [navigate]);
 
   return (
     <NavigationContext.Provider
       value={{
-        currentView,
-        selectedCustomerId,
-        selectedInvoiceId,
-        navParams,
+        currentView: navigation.view,
+        selectedCustomerId: navigation.params.customerId || null,
+        selectedInvoiceId: navigation.params.invoiceId || null,
+        navParams: navigation.params,
         navigate,
         navigateToCustomer,
         navigateToInvoice,
         isSidebarOpen,
         setSidebarOpen: setIsSidebarOpen,
-        toggleSidebar,
+        toggleSidebar: () => setIsSidebarOpen((previous) => !previous),
       }}
     >
       {children}
@@ -113,8 +135,9 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
 export const useNavigation = (): NavigationContextType => {
   const context = useContext(NavigationContext);
-  if (!context) {
-    throw new Error('useNavigation deve ser utilizado dentro de um NavigationProvider');
-  }
+  if (!context) throw new Error('useNavigation deve ser utilizado dentro de um NavigationProvider');
   return context;
 };
+
+
+/* end */
