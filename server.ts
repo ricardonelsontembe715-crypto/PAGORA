@@ -937,7 +937,9 @@ async function bootstrap() {
       // websocket upgrade in the preview proxy. Disable the client socket
       // while keeping middleware-mode development rendering intact.
       server: { middlewareMode: true, hmr: false },
-      appType: 'spa',
+      // Custom mode prevents Vite from injecting /@vite/client into the HTML.
+      // This server does not expose a Vite HMR websocket endpoint.
+      appType: 'custom',
     });
     app.use(vite.middlewares);
   } else {
