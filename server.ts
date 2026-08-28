@@ -933,7 +933,10 @@ app.post('/api/data/:resource', (req: Request, res: Response) => {
 async function bootstrap() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      // Express owns the HTTP server, so Vite cannot complete its HMR
+      // websocket upgrade in the preview proxy. Disable the client socket
+      // while keeping middleware-mode development rendering intact.
+      server: { middlewareMode: true, hmr: false },
       appType: 'spa',
     });
     app.use(vite.middlewares);
