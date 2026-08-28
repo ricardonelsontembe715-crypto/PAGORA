@@ -1,0 +1,17 @@
+{
+  "name": "PAGORA — Gestão de Cobranças",
+  "short_name": "PAGORA",
+  "description": "Cobre com confiança. Receba sem perseguir. Plataforma de gestão de cobranças e acompanhamento de pagamentos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

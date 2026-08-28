@@ -1,0 +1,6 @@
+{
+  "name": "PAGORA",
+  "description": "Plataforma SaaS para gestão de cobranças, centro de cobrança inteligente, automações e regras de vencimento, acompanhamento de pagamentos e comunicação profissional em português de Portugal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
