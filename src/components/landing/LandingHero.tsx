@@ -36,7 +36,7 @@ export const LandingHero: React.FC = () => {
   };
 
   return (
-    <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50">
+    <section className="relative isolate w-full overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 pt-10 pb-14 sm:pt-12 sm:pb-16 md:pt-20 md:pb-24">
       {/* Elementos visuais de fundo subtis para criar profundidade sofisticada */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-tr from-indigo-100/50 via-slate-100/40 to-transparent blur-3xl opacity-70" />
@@ -159,7 +159,7 @@ export const LandingHero: React.FC = () => {
               </div>
 
               {/* Seletor de visualização do dashboard na demonstração */}
-              <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-lg border border-slate-700/80 text-xs">
+              <div className="flex w-full sm:w-auto items-center gap-1 bg-slate-800/90 p-1 rounded-lg border border-slate-700/80 text-xs overflow-x-auto">
                 <button
                   type="button"
                   onClick={() => setActiveTab('overview')}
