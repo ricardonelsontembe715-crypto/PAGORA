@@ -9,7 +9,7 @@ import { LandingFooter } from './LandingFooter';
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col antialiased selection:bg-indigo-600 selection:text-white">
       <LandingHeader />
       <main className="flex-1">
         <LandingHero />

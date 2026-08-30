@@ -27,7 +27,7 @@ export const LandingProductDemo: React.FC = () => {
   const [activeFeature, setActiveFeature] = useState<'clients' | 'invoices' | 'messages' | 'promises'>('clients');
 
   return (
-    <section className="py-16 md:py-24 bg-white border-b border-slate-200/80">
+    <section id="como-funciona" className="relative py-20 md:py-28 bg-white border-y border-slate-200/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-3">

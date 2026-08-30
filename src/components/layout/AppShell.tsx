@@ -6,7 +6,7 @@ import { PwaInstallBanner } from './PwaInstallBanner';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased">
+    <div className="min-h-screen bg-slate-50 flex flex-col antialiased">
       <PwaInstallBanner />
       <AppNavbar />
       <div className="flex-1 flex w-full">

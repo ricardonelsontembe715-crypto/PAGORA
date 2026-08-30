@@ -143,10 +143,10 @@ export const AppSidebar: React.FC = () => {
             navigate(item.id);
             setSidebarOpen(false);
           }}
-          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all duration-200 ${
             isActive
-              ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-2xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+              ? 'bg-indigo-50/90 text-indigo-800 font-semibold shadow-[inset_3px_0_0_#4F46E5]'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
           }`}
         >
           <div className="flex items-center gap-2.5 truncate">

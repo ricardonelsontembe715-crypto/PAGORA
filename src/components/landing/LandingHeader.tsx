@@ -6,8 +6,8 @@ export const LandingHeader: React.FC = () => {
   const { navigate } = useNavigation();
 
   return (
-    <header className="sticky top-0 z-40 bg-[#F8FAFC]/90 backdrop-blur-md border-b border-slate-200/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-40 bg-slate-50/85 backdrop-blur-xl border-b border-slate-200/60">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         {/* Marca PAGORA */}
         <div
           onClick={() => navigate('landing')}
@@ -43,8 +43,9 @@ export const LandingHeader: React.FC = () => {
         </nav>
 
         {/* Ações de autenticação */}
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <Button
+            className="hidden sm:inline-flex"
             size="sm"
             variant="ghost"
             onClick={() => navigate('auth_login')}
@@ -52,11 +53,13 @@ export const LandingHeader: React.FC = () => {
             Iniciar sessão
           </Button>
           <Button
+            className="px-3 text-xs sm:px-4 sm:text-sm"
             size="sm"
             variant="primary"
             onClick={() => navigate('auth_register')}
           >
-            Começar gratuitamente
+            <span className="sm:hidden">Começar grátis</span>
+            <span className="hidden sm:inline">Começar gratuitamente</span>
           </Button>
         </div>
       </div>
